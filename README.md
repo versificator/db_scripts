@@ -1,2 +1,3 @@
-# db_scripts
-Database scripts
+Here are some scripts which will backup specified tables of database. The reason one might wish to use this over pg_dumpall is that you may only wish to restore individual tables from a backup, whereas pg_dumpall dumps a plain SQL copy into a single file. The idea is to run these in a nightly cron job.
+ - pg_backup.config - The main configuration file. This should be the only file which needs user modifications.
+ - pg_backup.sh - The normal backup script which will go through each database and save a gzipped and/or a custom format copy of the backup into a date-based directory. It will delete expired backups based on the configuration.
