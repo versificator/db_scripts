@@ -109,7 +109,7 @@ function perform_backups()
                 then
                         echo "Plain backup of $DATABASE . Include the following tables:  $TABLE_ONLY_LIST"
 
-                        if ! pg_dump -Fp -w -h "$HOSTNAME" -U "$USERNAME" "$DATABASE" | gzip > $FINAL_BACKUP_DIR"$DATABASE".sql.gz.in_progress; then
+                        if ! pg_dump -Fp -w -h "$HOSTNAME" -U "$USERNAME" -t "$TABLE_ONLY_LIST" "$DATABASE" | gzip > $FINAL_BACKUP_DIR"$DATABASE".sql.gz.in_progress; then
                                echo "[!!ERROR!!] Failed to produce plain backup database $DATABASE" 1>&2
                         else
                                mv $FINAL_BACKUP_DIR"$DATABASE".sql.gz.in_progress $FINAL_BACKUP_DIR"$DATABASE".sql.gz
@@ -120,7 +120,7 @@ function perform_backups()
                 then
                         echo "Custom backup of $DATABASE . Include the following tables: $TABLE_ONLY_LIST"
 
-                        if ! pg_dump -Fc -w -h "$HOSTNAME" -U "$USERNAME" "$DATABASE" -f $FINAL_BACKUP_DIR"$DATABASE".custom.in_progress; then
+                        if ! pg_dump -Fc -w -h "$HOSTNAME" -U "$USERNAME" -t "$TABLE_ONLY_LIST" "$DATABASE" -f $FINAL_BACKUP_DIR"$DATABASE".custom.in_progress; then
                                echo "[!!ERROR!!] Failed to produce custom backup database $DATABASE" 1>&2
                         else
                                mv $FINAL_BACKUP_DIR"$DATABASE".custom.in_progress $FINAL_BACKUP_DIR"$DATABASE".custom
@@ -144,7 +144,7 @@ DAY_OF_MONTH=`date +%d`
 if [ $DAY_OF_MONTH -eq 1 ];
 then
         # Delete all expired monthly directories
-        find $BACKUP_DIR -maxdepth 1 -name "*-monthly" -exec rm -rf '{}' ';'
+        #find $BACKUP_DIR -maxdepth 1 -name "*-monthly" -exec rm -rf '{}' ';'
 
         perform_backups "-monthly"
 
@@ -163,7 +163,7 @@ if [ ! -z $WEEKS_TO_KEEP ]; then
         if [ "$DAY_OF_WEEK" = "$DAY_OF_WEEK_TO_KEEP" ];
         then
                 # Delete all expired weekly directories
-                find $BACKUP_DIR -maxdepth 1 -mtime +$EXPIRED_DAYS -name "*-weekly" -exec rm -rf '{}' ';'
+                #find $BACKUP_DIR -maxdepth 1 -mtime +$EXPIRED_DAYS -name "*-weekly" -exec rm -rf '{}' ';'
 
                 perform_backups "-weekly"
 
@@ -174,7 +174,7 @@ fi;
 # DAILY BACKUPS
 
 # Delete daily backups 7 days old or more
-find $BACKUP_DIR -maxdepth 1 -mtime +$DAYS_TO_KEEP -name "*-daily" -exec rm -rf '{}' ';'
+#find $BACKUP_DIR -maxdepth 1 -mtime +$DAYS_TO_KEEP -name "*-daily" -exec rm -rf '{}' ';'
 
 perform_backups "-daily"
 
